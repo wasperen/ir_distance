@@ -1,10 +1,11 @@
 import pigpio
 
 TRANSLATIONS = [
-    [ 68,120], [ 69,110], [ 71,100], [ 73, 90], [ 75, 80],
-    [ 78, 70], [ 81, 60], [ 88, 50], [ 95, 40],
-    [108, 30], [135, 20], [190, 10], [230,  5]
+    [68, 120], [69, 110], [71, 100], [73, 90], [75, 80],
+    [78, 70], [81, 60], [88, 50], [95, 40],
+    [108, 30], [135, 20], [190, 10], [230, 5]
 ]
+
 
 class IRDistance:
 
@@ -18,10 +19,11 @@ class IRDistance:
         if self.script_id < 0:
             print 'could not store script: ', self.script_id
 
-    def _create_script(self, gpio_out, gpio_in):
+    @staticmethod
+    def _create_script(gpio_out, gpio_in):
         o = str(gpio_out)
         i = str(gpio_in)
-        script  = 'TAG 000 '
+        script = 'TAG 000 '
         script += 'W ' + o + ' 0 MILS 70 '
         script += 'LD v0 8 '
 
@@ -52,21 +54,21 @@ class IRDistance:
         print script
         return script
 
-    def _calc_distance(self, measure):
+    @staticmethod
+    def _calc_distance(measure):
         if measure <= 0:
             return measure
 
-        if measure <= translations[0][0]:
-            return translations[0][1]
+        if measure <= TRANSLATIONS[0][0]:
+            return TRANSLATIONS[0][1]
 
-        for i in range(0,len(translations)-1):
-            if measure <= translations[i+1][0]:
-                return translations[i][1] + \
-                    (measure - translations[i][0]) / (translations[i][0] - translations[i+1][0]) * \
-                    (translations[i][1] - translations[i+1][1])
+        for i in range(0, len(TRANSLATIONS)-1):
+            if measure <= TRANSLATIONS[i+1][0]:
+                return TRANSLATIONS[i][1] + \
+                    (measure - TRANSLATIONS[i][0]) / (TRANSLATIONS[i][0] - TRANSLATIONS[i+1][0]) * \
+                    (TRANSLATIONS[i][1] - TRANSLATIONS[i+1][1])
 
-        return translations[len(translations)-1][1]
-
+        return TRANSLATIONS[len(TRANSLATIONS)-1][1]
 
     def get_measurement(self):
         status, params = self.pi.script_status(self.script_id)
@@ -74,16 +76,13 @@ class IRDistance:
             return -1
         return params[0]
 
-
     def get_distance(self):
-        return _calc_distance(self.get_measurement())
-
+        return IRDistance._calc_distance(self.get_measurement())
 
     def start(self):
         if self.script_id >= 0:
             self.pi.run_script(self.script_id)
             print 'started script', self.script_id
-
 
     def stop(self):
         if self.script_id >= 0:
