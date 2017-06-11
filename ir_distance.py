@@ -60,15 +60,15 @@ class IRDistance:
             return measure
 
         if measure <= TRANSLATIONS[0][0]:
-            return TRANSLATIONS[0][1]
+            return float(TRANSLATIONS[0][1])
 
         for i in range(0, len(TRANSLATIONS)-1):
             if measure <= TRANSLATIONS[i+1][0]:
                 return TRANSLATIONS[i][1] + \
-                    (measure - TRANSLATIONS[i][0]) / (TRANSLATIONS[i][0] - TRANSLATIONS[i+1][0]) * \
-                    (TRANSLATIONS[i][1] - TRANSLATIONS[i+1][1])
+                    float(measure - TRANSLATIONS[i][0]) / float(TRANSLATIONS[i][0] - TRANSLATIONS[i+1][0]) * \
+                    float(TRANSLATIONS[i][1] - TRANSLATIONS[i+1][1])
 
-        return TRANSLATIONS[len(TRANSLATIONS)-1][1]
+        return float(TRANSLATIONS[len(TRANSLATIONS)-1][1])
 
     def get_measurement(self):
         status, params = self.pi.script_status(self.script_id)
